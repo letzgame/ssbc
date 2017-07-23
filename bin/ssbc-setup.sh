@@ -19,9 +19,6 @@ yum -y install wget net-tools unzip git
 #yum clean metadata
 #yum makecache
 cd /root/
-git clone https://github.com/letzgame/ssbc.git
-mv ./ssbc/ ./ssbc-master/
-#解压后 源码在/root/ssbc-master目录
 yum -y install gcc gcc-c++ python-devel mariadb mariadb-devel mariadb-server
 cd /root/ssbc-master
 yum -y install epel-release 
