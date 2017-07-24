@@ -57,8 +57,8 @@ TID_LENGTH = 2
 RE_JOIN_DHT_INTERVAL = 3
 TOKEN_LENGTH = 2
 
-MAX_QUEUE_LT = 30
-MAX_QUEUE_PT = 200
+MAX_QUEUE_LT = 300
+MAX_QUEUE_PT = 2000
 
 geoip = pygeoip.GeoIP('GeoIP.dat')
 
@@ -399,7 +399,7 @@ if __name__ == "__main__":
     rpcthread.setDaemon(True)
     rpcthread.start()
 
-    dht = DHTServer(master, "0.0.0.0", 6881, max_node_qsize=200)
+    dht = DHTServer(master, "0.0.0.0", 6881, max_node_qsize=2000)
     dht.start()
     dht.auto_send_find_node()
 
