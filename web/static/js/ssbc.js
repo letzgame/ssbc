@@ -59,13 +59,13 @@ function showAds(){
     }else if(ua.indexOf('bot') > -1){ //some bots
     }else if(PVCC.getCookie('noads') == ''){
         if(Math.random() < 0.5){
-            document.write('<script src="http://v.6dvip.com/ge/?s=47688"><\/script>');
+            //document.write('<script src="http://v.6dvip.com/ge/?s=47688"><\/script>');
         }else{
-            document.write('<script src="http://89.8ox.cn/pge/?s=46212"><\/script>');
+            //document.write('<script src="http://89.8ox.cn/pge/?s=46212"><\/script>');
         }
         if(window.location.href.indexOf('/info/') > -1){
-                document.writeln("<script language=\"JavaScript\" type=\"text/javascript\" src=\"http://js.6dad.com/js/xiaoxia.js\"></script>");
-                document.writeln("<script language=\"JavaScript\" type=\"text/javascript\" src=\"http://js.ta80.com/js/12115.js\"></script>");
+                //document.writeln("<script language=\"JavaScript\" type=\"text/javascript\" src=\"http://js.6dad.com/js/xiaoxia.js\"></script>");
+                //document.writeln("<script language=\"JavaScript\" type=\"text/javascript\" src=\"http://js.ta80.com/js/12115.js\"></script>");
         }
         /*
         if(navigator.language != 'zh-CN'){
