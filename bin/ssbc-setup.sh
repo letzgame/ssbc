@@ -12,14 +12,14 @@ systemctl stop iptables.service
 systemctl disable iptables.service  
 setenforce 0  
 sed -i s/"enforcing"/"disabled"/g  /etc/selinux/config
-yum -y install wget net-tools unzip git
+yum -y install wget net-tools unzip
 #如果使用linode主机，请取消下面4行的注释
 #wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyuncs.com/repo/Centos-7.repo
 #wget -qO /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
 #yum clean metadata
 #yum makecache
 yum -y install gcc gcc-c++ python-devel mariadb mariadb-devel mariadb-server
-cd /root/ssbc
+cd /root/ssbc-master
 yum -y install epel-release 
 yum -y install  python-pip
 pip install -r requirements.txt
@@ -97,7 +97,7 @@ http {
          proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         }
         location /static/ {
-         root /root/ssbc/web/; 
+         root /root/ssbc-master/web/; 
         }
         error_page 404 /404.html;
             location = /40x.html {
@@ -111,9 +111,9 @@ http {
 }
 EOF
 nginx -s reload
-ln -s /usr/lib/python2.7/site-packages/django/contrib/admin/static/admin /root/ssbc/web/static/admin
-cd /root/ssbc
-sed -i "42a\    'gunicorn'," /root/ssbc/ssbc/settings.py
+ln -s /usr/lib/python2.7/site-packages/django/contrib/admin/static/admin /root/ssbc-master/web/static/admin
+cd /root/ssbc-master
+sed -i "42a\    'gunicorn'," /root/ssbc-master/ssbc/settings.py
 #gunicorn启动网站并在后台运行
 nohup gunicorn ssbc.wsgi:application -b 127.0.0.1:8000 --reload>/dev/zero 2>&1&  
 myip=`/sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"`
@@ -129,16 +129,16 @@ done
 nohup python simdht_worker.py >/dev/zero 2>&1&
 #定时索引并在后台运行
 nohup python index_worker.py >/dev/zero 2>&1&  
-cd /root/ssbc
+cd /root/ssbc-master
 python manage.py createsuperuser
 #开机自启动
 chmod +x /etc/rc.d/rc.local
 echo "systemctl start  mariadb.service" >> /etc/rc.d/rc.local
 echo "systemctl start  nginx.service" >> /etc/rc.d/rc.local
-echo "cd /root/ssbc" >> /etc/rc.d/rc.local
+echo "cd /root/ssbc-master" >> /etc/rc.d/rc.local
 echo "indexer -c sphinx.conf --all" >> /etc/rc.d/rc.local
 echo "searchd --config ./sphinx.conf " >> /etc/rc.d/rc.local
 echo "nohup gunicorn ssbc.wsgi:application -b 127.0.0.1:8000 --reload>/dev/zero 2>&1&" >> /etc/rc.d/rc.local
-echo "cd /root/ssbc/workers" >> /etc/rc.d/rc.local
+echo "cd /root/ssbc-master/workers" >> /etc/rc.d/rc.local
 echo "nohup python simdht_worker.py >/dev/zero 2>&1&" >> /etc/rc.d/rc.local
 echo "nohup python index_worker.py >/dev/zero 2>&1&" >> /etc/rc.d/rc.local
