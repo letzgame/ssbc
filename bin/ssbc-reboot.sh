@@ -1,5 +1,5 @@
 #!/bin/bash
-#add this to crontab: 0,15 * * * * sh /root/ssbc/bin/ssbc-reboot.sh
+#add this to crontab: */15 * * * * sh /root/ssbc/bin/ssbc-reboot.sh
 ps -ef|grep simdht_worker.py|grep -v grep|awk '{print $2}'|xargs kill -9
 ps -ef|grep index_worker.py|grep -v grep|awk '{print $2}'|xargs kill -9
 cd /root/ssbc/workers
