@@ -142,3 +142,10 @@ echo "nohup gunicorn ssbc.wsgi:application -b 127.0.0.1:8000 --reload>/dev/zero 
 echo "cd /root/ssbc/workers" >> /etc/rc.d/rc.local
 echo "nohup python simdht_worker.py >/dev/zero 2>&1&" >> /etc/rc.d/rc.local
 echo "nohup python index_worker.py >/dev/zero 2>&1&" >> /etc/rc.d/rc.local
+#Crontab setup
+echo "setup crontab for ssbc reboot"
+crontab -l > mycron
+echo "0,15 * * * * sh /root/ssbc/bin/ssbc-reboot.sh" >> mycron
+crontab mycron
+rm mycron
+echo "setup crontab finished"
