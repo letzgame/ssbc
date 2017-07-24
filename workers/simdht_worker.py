@@ -4,7 +4,6 @@
 磁力搜索meta信息入库程序
 xiaoxia@xiaoxia.org
 2015.6 Forked CreateChen's Project: https://github.com/CreateChen/simDownloader
-2016.12！冰剑 ！新增功能：过滤恶意推广网址的无效磁力链接
 """
 
 import hashlib
@@ -43,11 +42,7 @@ from metadata import save_metadata
 
 DB_HOST = '127.0.0.1'
 DB_USER = 'root'
-DB_PORT = 3306
 DB_PASS = ''
-DB_NAME = 'ssbc'
-BLACK_FILE = 'black_list.txt'
-
 BOOTSTRAP_NODES = (
     ("router.bittorrent.com", 6881),
     ("dht.transmissionbt.com", 6881),
@@ -62,17 +57,6 @@ MAX_QUEUE_PT = 200
 
 geoip = pygeoip.GeoIP('GeoIP.dat')
 
-def load_res_blacklist(black_list_path):
-    black_list = []
-    file_path = os.path.join(os.path.dirname(__file__), black_list_path)
-    f = open(file_path, 'r')
-    while True:
-        line = f.readline()
-        if not(line):
-            break
-        black_list.append(line)
-    f.close()
-    return black_list
 
 def is_ip_allowed(ip):
     return geoip.country_code_by_addr(ip) not in ('CN','TW','HK')
@@ -295,14 +279,13 @@ class Master(Thread):
         self.setDaemon(True)
         self.queue = Queue()
         self.metadata_queue = Queue()
-        self.dbconn = mdb.connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, port=DB_PORT, charset='utf8')
+        self.dbconn = mdb.connect(DB_HOST, DB_USER, DB_PASS, 'ssbc', charset='utf8')
         self.dbconn.autocommit(False)
         self.dbcurr = self.dbconn.cursor()
         self.dbcurr.execute('SET NAMES utf8')
         self.n_reqs = self.n_valid = self.n_new = 0
         self.n_downloading_lt = self.n_downloading_pt = 0
         self.visited = set()
-        self.black_list = load_res_blacklist(BLACK_FILE)
 
     def got_torrent(self):
         binhash, address, data, dtype, start_time = self.metadata_queue.get()
@@ -314,7 +297,7 @@ class Master(Thread):
             return
         self.n_valid += 1
 
-        save_metadata(self.dbcurr, binhash, address, start_time, data,self.black_list)
+        save_metadata(self.dbcurr, binhash, address, start_time, data)
         self.n_new += 1
 
 
@@ -389,6 +372,7 @@ def rpc_server():
     rpcserver.register_function(announce, 'announce')
     print 'Starting xml rpc server...'
     rpcserver.serve_forever()
+
 
 if __name__ == "__main__":
     # max_node_qsize bigger, bandwith bigger, spped higher
